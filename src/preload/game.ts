@@ -15,7 +15,7 @@ export default class GamePreload extends Preload {
     }
 
     onLoadEnd() {
-        window.clientExit.style.display = 'flex';
+        if (window.clientExit) window.clientExit.style.display = 'flex';
         window.closeClient = () => window.close();
 
         let style = document.createElement('style');
@@ -36,12 +36,11 @@ function injectWatermark() {
     watermark.dataset.version = `${branch}/${commit}`;
     watermark.id = 'clientWatermark';
 
-    document
-        .getElementById('matchInfo')
-        .insertAdjacentElement('beforebegin', watermark);
+    const matchInfo = document.getElementById('matchInfo');
+    matchInfo?.insertAdjacentElement('beforebegin', watermark);
 
-    document.getElementById('timerHolder').style.cssText +=
-        ';width:fit-content!important';
+    const timeHolder = document.getElementById('timeHolder');
+    if (timeHolder) timeHolder.style.cssText += ';width:fit-content!important';
 }
 
 async function injectHSP() {

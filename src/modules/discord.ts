@@ -227,6 +227,7 @@ export default class Discord extends Module {
 
     renderer(): void {
         setInterval(async function () {
+            if (!window.getGameActivity) return;
             let gameActivity = window.getGameActivity() || {};
             gameActivity.comp = !(
                 document.getElementById('mMenuHolComp')?.style.display == 'none'

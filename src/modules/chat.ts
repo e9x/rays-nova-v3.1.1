@@ -141,6 +141,7 @@ export default class Chat extends Module {
 
     renderer() {
         const elem = document.getElementById('chatList');
+        if (!elem) return;
         const mock = document.createElement('div');
 
         window.chatList = Object.defineProperties(

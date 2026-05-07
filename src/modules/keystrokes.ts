@@ -46,18 +46,11 @@ export default class Keystrokes extends Module {
     container?: HTMLDivElement;
     stylesheet = document.createElement('style');
     
-    keys: {
-        w?: HTMLDivElement,
-        a?: HTMLDivElement,
-        s?: HTMLDivElement,
-        d?: HTMLDivElement,
-        lmb?: HTMLDivElement,
-        rmb?: HTMLDivElement,
-        space?: HTMLDivElement,
-    } = {};
+    keys: Record<string, HTMLElement> = {};
 
     applyConfig() {
-        let rule = this.stylesheet.sheet.cssRules[0] as CSSStyleRule;
+        let rule = this.stylesheet.sheet?.cssRules[0] as CSSStyleRule;
+        if (!rule) return;
 
         rule.style.setProperty('display', this.config.get('enabled', false) ? '' : 'none');
         rule.style.setProperty('--raysnova-key-scale', this.config.get('scale', 1));
@@ -77,21 +70,22 @@ export default class Keystrokes extends Module {
         this.stylesheet.textContent = 'style + .keystrokes {}';
         this.container.prepend(this.stylesheet);
 
-        document.getElementById('inGameUI').appendChild(this.container);
+        const inGameUI = document.getElementById('inGameUI');
+        inGameUI?.appendChild(this.container);
         this.config.onAnyChange(this.applyConfig.bind(this));
         this.applyConfig();
 
         let keyNames = ['w', 'a', 's', 'd', 'lmb', 'rmb', 'space'];
 
-        for (let i = 0; i < keyNames.length; i++) {
+        for (const name of keyNames) {
             let element = document.getElementById(
-                'raysnova_key' + keyNames[i].toUpperCase()
+                'raysnova_key' + name.toUpperCase()
             );
 
-            this.keys[keyNames[i]] = element;
+            if (element) this.keys[name] = element;
         }
 
-        console.log(this.keys);
+        // console.log(this.keys);
 
         document.addEventListener('keydown', event => {
             let keyName = event.key.toLowerCase();
@@ -111,7 +105,7 @@ export default class Keystrokes extends Module {
 
         let fadeBg = document.getElementById('instructionsFadeBG');
 
-        waitFor(() => fadeBg.style.opacity == '0').then(() => {
+        waitFor(() => fadeBg?.style.opacity == '0').then(() => {
             let canvases = document.body.getElementsByTagName('canvas');
 
             for (let i = canvases.length-1; i >= 0; i--) {

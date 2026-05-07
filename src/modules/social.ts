@@ -179,12 +179,12 @@ export default class Social extends Module {
             'endMidHolder'
         ) as HTMLDivElement;
 
-        new MutationObserver(() => this.patchScoreboards()).observe(
+        if (this.centerLeaderDisplay) new MutationObserver(() => this.patchScoreboards()).observe(
             this.centerLeaderDisplay,
             { childList: true }
         );
 
-        new MutationObserver(() => this.patchScoreboards()).observe(
+        if (this.instructionHolder) new MutationObserver(() => this.patchScoreboards()).observe(
             this.instructionHolder,
             { attributes: true, attributeFilter: ['style'] }
         );
