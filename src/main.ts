@@ -4,10 +4,10 @@ import config from './config';
 import { Context, RunAt, fromURL } from './context';
 import ModuleManger from './module/manager';
 import { join } from 'path';
+import process from 'process';
 
 export let window: BrowserWindow;
-const userAgent = // for non-game windows (e.g. editor, viewer, social)
-    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36';
+const userAgent = 'Electron';
 
 function quit() {
     let size = window.getSize();
@@ -47,17 +47,19 @@ async function handleKeyEvent(
         refresh: 'F5',
         fullscreen: 'F11',
         devtools: 'F12',
+        logout: 'F7',
     });
 
     binds.newGame = binds.newGame || 'F6';
     binds.refresh = binds.refresh || 'F5';
     binds.fullscreen = binds.fullscreen || 'F11';
     binds.devtools = binds.devtools || 'F12';
+    binds.logout = binds.logout || 'F7';
 
     switch (context) {
         case Context.Game:
             if (input.key == binds.newGame)
-                window.loadURL('https://krunker.io');
+                window.loadURL('https://krunker.io', { userAgent });
         default:
             if (input.key == binds.refresh) window.reload();
 
@@ -70,6 +72,9 @@ async function handleKeyEvent(
                 if (devtools) window.webContents.closeDevTools();
                 else window.webContents.openDevTools({ mode: 'detach' });
             }
+
+            if (input.key === binds.logout) window.webContents.send('logout');
+
             break;
     }
 }
@@ -139,7 +144,11 @@ export default function createMainWindow(key: string) {
         'before-input-event',
         handleKeyEvent.bind(null, Context.Game, window)
     );
-    window.loadURL('https://krunker.io');
+    window.loadURL(process.argv.includes('--sandbox')
+        ? 'https://krunker.io/?sandbox'
+        : (process.argv.find(e => e.startsWith('https://krunker.io')) || 'https://krunker.io'),
+        { userAgent }
+    );
 }
 
 export function handleNavigation(url: URL) {
@@ -148,7 +157,6 @@ export function handleNavigation(url: URL) {
     switch (context) {
         case Context.Game:
             window.loadURL(url.toString());
-            window.focus();
             break;
         case null:
             shell.openExternal(url.toString());

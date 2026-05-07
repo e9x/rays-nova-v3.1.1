@@ -5,6 +5,7 @@ import { encrypt } from './altmanager';
 import Checkbox from '../options/checkbox';
 import Dropdown from '../options/dropdown';
 import TextInput from '../options/textinput';
+import ClientOption from '../options';
 
 enum ProxyProtocol {
     HTTP,
@@ -17,7 +18,7 @@ export default class Proxy extends Module {
     name = 'Proxy';
     id = 'proxy';
     
-    options = [
+    options: ClientOption[] = [
         new Checkbox(this, {
             name: 'Enabled',
             id: 'enabled',

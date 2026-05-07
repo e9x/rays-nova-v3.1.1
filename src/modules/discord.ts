@@ -7,6 +7,7 @@ import Checkbox from '../options/checkbox';
 import Button from '../options/button';
 import RPCButtonsUI from '../ui/rpcButtons';
 import Social from './social';
+import ClientOption from '../options';
 
 enum RPCMode {
     GameInvite,
@@ -23,7 +24,7 @@ export default class Discord extends Module {
 
     name = 'Discord';
     id = 'discord';
-    options = [
+    options: ClientOption[] = [
         new Dropdown(this, {
             name: 'Rich Presence Mode',
             id: 'mode',
@@ -227,6 +228,7 @@ export default class Discord extends Module {
 
     renderer(): void {
         setInterval(async function () {
+            if (!window.getGameActivity) return;
             let gameActivity = window.getGameActivity() || {};
             gameActivity.comp = !(
                 document.getElementById('mMenuHolComp')?.style.display == 'none'

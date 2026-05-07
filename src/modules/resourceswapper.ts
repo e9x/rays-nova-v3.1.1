@@ -5,6 +5,7 @@ import Manager from '../module/manager';
 import { join } from 'path';
 import { existsSync, statSync, mkdirSync } from 'fs';
 import Checkbox from '../options/checkbox';
+import ClientOption from '../options';
 
 export default class ResourceSwapper extends Module {
     id = 'resourceswapper';
@@ -18,7 +19,7 @@ export default class ResourceSwapper extends Module {
         },
     ];
 
-    options = [
+    options: ClientOption[] = [
         new Checkbox(this, {
             name: 'Enabled',
             description:

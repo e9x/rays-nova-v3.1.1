@@ -5,11 +5,12 @@ import Checkbox from '../options/checkbox';
 import { window } from '../main';
 import TextInput from '../options/textinput';
 import Slider from '../options/slider';
+import ClientOption from '../options';
 
 export default class Misc extends Module {
     name = 'Miscellaneous';
     id = 'misc';
-    options = [
+    options: ClientOption[] = [
         new Checkbox(this, {
             name: 'Show client watermark',
             description: '',
