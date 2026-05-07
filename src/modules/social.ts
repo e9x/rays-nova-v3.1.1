@@ -4,13 +4,14 @@ import { WebSocket } from 'ws';
 import { Context, RunAt } from '../context';
 import Checkbox from '../options/checkbox';
 import { waitFor } from '../util';
+import ClientOption from '../options';
 
 export default class Social extends Module {
     name = 'Social';
     id = 'social';
     readonly endpoint = new URL('wss://api.zedboy.dev/nova/ws');
 
-    options = [
+    options: ClientOption[] = [
         new Checkbox(this, {
             name: 'Enabled',
             description: 'Sync custom badges & clan tags from ' + this.endpoint.hostname,

@@ -5,6 +5,7 @@ import { join } from 'path';
 import { waitFor } from '../util';
 import Checkbox from '../options/checkbox';
 import Slider from '../options/slider';
+import ClientOption from '../options';
 
 export default class Keystrokes extends Module {
     name = 'Keystrokes';
@@ -16,7 +17,7 @@ export default class Keystrokes extends Module {
         }
     ];
 
-    options = [
+    options: ClientOption[] = [
         new Checkbox(this, {
             name: 'Enabled',
             id: 'enabled',
