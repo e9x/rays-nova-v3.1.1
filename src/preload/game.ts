@@ -14,11 +14,13 @@ ipcRenderer.on('logout', () => {
     const cookies = [ '__FRVR_auth_refresh_token', '__FRVR_auth_access_token', '_frvr' ];
     for (const key of storageKeys) localStorage.removeItem(key);
     const domains = [ 'krunker.io', '.krunker.io' ];
-    for (const cookie of cookies)
-        for (const domain of domains)
+    for (const cookie of cookies) {
+        for (const domain of domains) {
             document.cookie = `${cookie}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=${domain}`;
+        }
+    }
     location.reload();
-})
+});
 
 export default class GamePreload extends Preload {
     context = Context.Game;
