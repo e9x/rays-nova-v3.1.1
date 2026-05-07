@@ -57,7 +57,7 @@ async function handleKeyEvent(
     switch (context) {
         case Context.Game:
             if (input.key == binds.newGame)
-                window.loadURL('https://krunker.io');
+                window.loadURL('https://krunker.io', { userAgent });
         default:
             if (input.key == binds.refresh) window.reload();
 
