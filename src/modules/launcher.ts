@@ -1,11 +1,12 @@
 import { Context, RunAt } from '../context';
 import Module from '../module';
+import ClientOption from '../options';
 import Dropdown from '../options/dropdown';
 
 export default class Launcher extends Module {
     id = 'launcher';
     name = 'Launcher settings';
-    options = [
+    options: ClientOption[] = [
         new Dropdown(this, {
             name: 'Launch mode',
             description:

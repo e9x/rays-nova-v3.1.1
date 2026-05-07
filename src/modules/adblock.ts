@@ -3,6 +3,7 @@ import Module from '../module';
 import Checkbox from '../options/checkbox';
 import Manager from '../module/manager';
 import { request } from 'https';
+import ClientOption from '../options';
 
 export default class AdBlock extends Module {
     hostsURL = 'https://blocklistproject.github.io/Lists/ads.txt';
@@ -10,7 +11,7 @@ export default class AdBlock extends Module {
 
     id = 'adblock';
     name = 'Ad Block';
-    options = [
+    options: ClientOption[] = [
         new Checkbox(this, {
             name: 'Enabled',
             id: 'enabled',

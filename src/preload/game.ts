@@ -77,7 +77,7 @@ async function injectHSP() {
                 let statName = stat.childNodes[0].textContent;
 
                 if (statName == 'Hits') {
-                    hits = Number(stat.childNodes[1].textContent.replaceAll(',', ''));
+                    hits = Number(stat.childNodes[1]?.textContent?.replaceAll(',', '') ?? '0');
                 } else if (statName == 'Headshots') {
                     headshots = Number(stat.childNodes[1]?.textContent?.replaceAll(',', '') ?? '0');
                 } else if (statName == 'Accuracy') {

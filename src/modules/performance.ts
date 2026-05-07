@@ -4,6 +4,7 @@ import Module from '../module';
 import Checkbox from '../options/checkbox';
 import Button from '../options/button';
 import SwitchesUI from '../ui/switches';
+import ClientOption from '../options';
 
 class SwitchesButton extends Button {
     generate(): HTMLElement {
@@ -60,7 +61,7 @@ export default class Performance extends Module {
 
     switchesUI = new SwitchesUI(this);
 
-    options = [
+    options: ClientOption[] = [
         new Checkbox(this, {
             id: 'uncap',
             name: 'Uncap FPS',
