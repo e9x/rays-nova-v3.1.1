@@ -4,6 +4,7 @@ import config from './config';
 import { Context, RunAt, fromURL } from './context';
 import ModuleManger from './module/manager';
 import { join } from 'path';
+import process from 'process';
 
 export let window: BrowserWindow;
 const userAgent = // for non-game windows (e.g. editor, viewer, social)
@@ -139,7 +140,10 @@ export default function createMainWindow(key: string) {
         'before-input-event',
         handleKeyEvent.bind(null, Context.Game, window)
     );
-    window.loadURL('https://krunker.io');
+    window.loadURL(process.argv.includes('--sandbox')
+        ? 'https://krunker.io/?sandbox'
+        : (process.argv.find(e => e.startsWith('https://krunker.io')) || 'https://krunker.io'),
+    );
 }
 
 export function handleNavigation(url: URL) {
