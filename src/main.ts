@@ -7,8 +7,7 @@ import { join } from 'path';
 import process from 'process';
 
 export let window: BrowserWindow;
-const userAgent = // for non-game windows (e.g. editor, viewer, social)
-    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36';
+const userAgent = 'Electron';
 
 function quit() {
     let size = window.getSize();
@@ -143,6 +142,7 @@ export default function createMainWindow(key: string) {
     window.loadURL(process.argv.includes('--sandbox')
         ? 'https://krunker.io/?sandbox'
         : (process.argv.find(e => e.startsWith('https://krunker.io')) || 'https://krunker.io'),
+        { userAgent }
     );
 }
 
