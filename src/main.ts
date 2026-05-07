@@ -47,12 +47,14 @@ async function handleKeyEvent(
         refresh: 'F5',
         fullscreen: 'F11',
         devtools: 'F12',
+        logout: 'F7',
     });
 
     binds.newGame = binds.newGame || 'F6';
     binds.refresh = binds.refresh || 'F5';
     binds.fullscreen = binds.fullscreen || 'F11';
     binds.devtools = binds.devtools || 'F12';
+    binds.logout = binds.logout || 'F7';
 
     switch (context) {
         case Context.Game:
@@ -70,6 +72,9 @@ async function handleKeyEvent(
                 if (devtools) window.webContents.closeDevTools();
                 else window.webContents.openDevTools({ mode: 'detach' });
             }
+
+            if (input.key === binds.logout) window.webContents.send('logout');
+
             break;
     }
 }

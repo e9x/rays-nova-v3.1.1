@@ -11,7 +11,8 @@
         "newGame": "F6",
         "refresh": "F5",
         "fullscreen": "F11",
-        "devtools": "F12"
+        "devtools": "F12",
+        "logout": "F7"
     },
     "misc": {
         "watermark": true

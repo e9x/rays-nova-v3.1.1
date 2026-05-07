@@ -5,6 +5,20 @@ import '../types/window';
 import { join } from 'path';
 import { branch, commit } from '../../buildinfo.json';
 import { waitFor } from '../util';
+import { ipcRenderer } from 'electron';
+
+ipcRenderer.on('logout', () => {
+    // if (!prompt('You pressed F7, are you sure you want to log out? This will clear all local data and cookies.')) return;
+    console.log('logging out of the game.');
+    const storageKeys = [ 'krunker_last', 'krunker_id', 'krunker_token', 'conUID_', '__frvr_rfc_uuidv4', '__FRVR_auth_refresh_token', '__FRVR_auth_access_token', 'pageSessionId', 'playSessionId', 'playSessionIdTimeStamp', 'registerNotificationLastShown' ];
+    const cookies = [ '__FRVR_auth_refresh_token', '__FRVR_auth_access_token', '_frvr' ];
+    for (const key of storageKeys) localStorage.removeItem(key);
+    const domains = [ 'krunker.io', '.krunker.io' ];
+    for (const cookie of cookies)
+        for (const domain of domains)
+            document.cookie = `${cookie}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=${domain}`;
+    location.reload();
+})
 
 export default class GamePreload extends Preload {
     context = Context.Game;
@@ -65,7 +79,7 @@ async function injectHSP() {
                 if (statName == 'Hits') {
                     hits = Number(stat.childNodes[1].textContent.replaceAll(',', ''));
                 } else if (statName == 'Headshots') {
-                    headshots = Number(stat.childNodes[1].textContent.replaceAll(',', ''));
+                    headshots = Number(stat.childNodes[1]?.textContent?.replaceAll(',', '') ?? '0');
                 } else if (statName == 'Accuracy') {
                     accuracyInd = i;
                 }
