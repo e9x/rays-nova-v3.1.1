@@ -152,7 +152,6 @@ export function handleNavigation(url: URL) {
     switch (context) {
         case Context.Game:
             window.loadURL(url.toString());
-            window.focus();
             break;
         case null:
             shell.openExternal(url.toString());
