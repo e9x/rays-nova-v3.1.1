@@ -47,7 +47,8 @@ export default class ResourceSwapper extends Module {
 
             if (
                 (
-                    !url.hostname.endsWith('krunker.io') &&
+                    !url.hostname.endsWith('totallynotio.krunker.zip') &&
+                    !url.hostname.endsWith('krunker.io')&&
                     !url.hostname.endsWith('browserfps.com')
                 ) ||
                 !existsSync(join(this.path, url.pathname)) ||

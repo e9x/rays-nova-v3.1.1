@@ -76,7 +76,8 @@ export default class AddCSSUI extends UI {
             label: 'Cancel',
             color: 'red',
             onChange: () => {
-                window.showWindow?.(1);
+                if ((this.module as any).openManager) (this.module as any).openManager();
+                else window.showWindow?.(1);
             },
 
             name: '',

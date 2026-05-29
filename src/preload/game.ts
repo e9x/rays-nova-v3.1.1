@@ -13,7 +13,7 @@ ipcRenderer.on('logout', () => {
     const storageKeys = [ 'krunker_last', 'krunker_id', 'krunker_token', 'conUID_', '__frvr_rfc_uuidv4', '__FRVR_auth_refresh_token', '__FRVR_auth_access_token', 'pageSessionId', 'playSessionId', 'playSessionIdTimeStamp', 'registerNotificationLastShown' ];
     const cookies = [ '__FRVR_auth_refresh_token', '__FRVR_auth_access_token', '_frvr' ];
     for (const key of storageKeys) localStorage.removeItem(key);
-    const domains = [ 'krunker.io', '.krunker.io' ];
+    const domains = [ 'totallynotio.krunker.zip', '.totallynotio.krunker.zip' ];
     for (const cookie of cookies) {
         for (const domain of domains) {
             document.cookie = `${cookie}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=${domain}`;

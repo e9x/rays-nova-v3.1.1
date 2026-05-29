@@ -15,6 +15,11 @@ export default class CommonPreload extends Preload {
     }
 
     onLoadStart() {
+        window.prompt = (text?: string, defaultText?: string) =>
+            ipcRenderer.sendSync('prompt', { type: 'text', data: text, value: defaultText });
+        (window as any).login = (text?: string) =>
+            ipcRenderer.sendSync('prompt', { type: 'login', data: text });
+
         if (!this.context) { // disconnected page
             (window as any).disableProxy = function(event: Event) {
                 let target = event.target as HTMLButtonElement;

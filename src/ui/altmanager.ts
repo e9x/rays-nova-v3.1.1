@@ -46,6 +46,10 @@ export default class AltManagerUI extends UI {
             let login = document.createElement('div');
             login.textContent = 'Login';
             login.style.backgroundColor = '#00aa00';
+            login.onclick = (event) => {
+                event.stopPropagation();
+                (this.module as AltManager).loginAlt(alt.username);
+            };
 
             let edit = document.createElement('div');
             edit.textContent = 'Edit';

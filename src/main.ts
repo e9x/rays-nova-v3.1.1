@@ -1,4 +1,4 @@
-import { screen, app, BrowserWindow, shell } from 'electron';
+import { screen, app, BrowserWindow, shell, ipcMain } from 'electron';
 import { launch, launchKey } from './index';
 import config from './config';
 import { Context, RunAt, fromURL } from './context';
@@ -7,7 +7,74 @@ import { join } from 'path';
 import process from 'process';
 
 export let window: BrowserWindow;
+let promptWindow: BrowserWindow | null = null;
 const userAgent = 'Electron';
+
+function getWindowBoundsForDisplay(display: Electron.Display, width: number, height: number) {
+    const { x, y, width: displayWidth, height: displayHeight } = display.workArea;
+    return {
+        x: Math.max(x, x + Math.floor((displayWidth - width) / 2)),
+        y: Math.max(y, y + Math.floor((displayHeight - height) / 2)),
+    };
+}
+
+function initPromptWindow() {
+    let response: unknown = null;
+
+    ipcMain.on('prompt', (event, opt) => {
+        response = null;
+
+        const ownerWindow = BrowserWindow.getFocusedWindow() || window;
+        const ownerDisplay = ownerWindow && !ownerWindow.isDestroyed()
+            ? screen.getDisplayMatching(ownerWindow.getBounds())
+            : screen.getPrimaryDisplay();
+        const promptWidth = 300;
+        const promptHeight = 157;
+        const promptBounds = getWindowBoundsForDisplay(
+            ownerDisplay,
+            promptWidth,
+            promptHeight
+        );
+
+        promptWindow = new BrowserWindow({
+            width: promptWidth,
+            height: promptHeight,
+            x: promptBounds.x,
+            y: promptBounds.y,
+            show: false,
+            frame: false,
+            skipTaskbar: true,
+            alwaysOnTop: true,
+            resizable: false,
+            movable: false,
+            transparent: true,
+            parent: ownerWindow && !ownerWindow.isDestroyed() ? ownerWindow : undefined,
+            webPreferences: {
+                nodeIntegration: true,
+                contextIsolation: false,
+                enableRemoteModule: true,
+            },
+        });
+
+        promptWindow.loadFile(join(__dirname, '../assets/html/prompt.html'));
+
+        promptWindow.webContents.on('did-finish-load', () => {
+            promptWindow?.show();
+            promptWindow?.webContents.send('text', JSON.stringify(opt));
+        });
+
+        promptWindow.on('closed', () => {
+            event.returnValue = response;
+            promptWindow = null;
+        });
+    });
+
+    ipcMain.on('prompt-response', (_event, args) => {
+        response = args === '' ? null : args;
+    });
+}
+
+initPromptWindow();
 
 function quit() {
     let size = window.getSize();
@@ -59,7 +126,7 @@ async function handleKeyEvent(
     switch (context) {
         case Context.Game:
             if (input.key == binds.newGame)
-                window.loadURL('https://krunker.io', { userAgent });
+                window.loadURL('https://totallynotio.krunker.zip', { userAgent });
         default:
             if (input.key == binds.refresh) window.reload();
 
@@ -145,8 +212,8 @@ export default function createMainWindow(key: string) {
         handleKeyEvent.bind(null, Context.Game, window)
     );
     window.loadURL(process.argv.includes('--sandbox')
-        ? 'https://krunker.io/?sandbox'
-        : (process.argv.find(e => e.startsWith('https://krunker.io')) || 'https://krunker.io'),
+        ? 'https://totallynotio.krunker.zip/?sandbox'
+        : (process.argv.find(e => e.startsWith('https://totallynotio.krunker.zip')) || 'https://totallynotio.krunker.zip'),
         { userAgent }
     );
 }

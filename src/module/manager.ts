@@ -48,7 +48,9 @@ export default class Manager {
     }
 
     load(runAt: RunAt) {
-        this.injectSettings();
+        void this.injectSettings().catch((error) => {
+            console.error('Error while injecting settings:', error);
+        });
 
         let modules = this.listAll();
         for (let module of modules) {
@@ -108,68 +110,57 @@ export default class Manager {
                 window.windows[0]
         );
 
-        for (let type of Object.keys(settings.tabs)) {
-            settings.tabs[type].splice(settings.tabs[type].length - 1, 0, {
-                name: 'CSS',
+        if (!Array.isArray(settings.tabs)) return;
+
+        let clientTabIndex = settings.tabs.findIndex((tab) => tab?.name == 'Client');
+        if (clientTabIndex === -1) {
+            clientTabIndex = settings.tabs.length;
+            settings.tabs.push({
+                name: 'Client',
                 categories: [],
             });
         }
 
-        let gen = settings.getSettings;
-        settings.getSettings = (...args) => {
-            let result = gen.apply(settings, args);
-            setTimeout(this.generateSettings.bind(this, settings));
-            return result;
+        let getCSettings = typeof settings.getCSettings == 'function'
+            ? settings.getCSettings
+            : () => '';
+        let manager = this;
+
+        settings.getCSettings = function (...args) {
+            let html = getCSettings.apply(this, args) || '';
+            let search = this.settingSearch?.toLowerCase() ?? '';
+
+            if (this.tabIndex !== clientTabIndex && (!search || !manager.hasClientSettings(search))) return html;
+
+            setTimeout(() => manager.generateSettings(this));
+            return html + '<div id="raysClientSettings"></div>';
         };
     }
 
-    private generateSettings(settings: any) {
-        let removedNoSettingsFound = false;
+    private hasClientSettings(search: string) {
+        if (!search) return true;
 
+        return this.listAll().some((module) =>
+            module.options.length &&
+            (module.name.toLowerCase().includes(search) ||
+                module.options.some((option) =>
+                    option.name.toLowerCase().includes(search)
+                ))
+        );
+    }
+
+    private generateSettings(settings: any) {
         let { settingSearch: search } = settings;
         search = search?.toLowerCase() ?? '';
 
-        let tabName =
-            settings.tabs[settings.settingType][settings.tabIndex]?.name;
+        let tabName = settings.tabs[settings.tabIndex]?.name;
         let isClientTab = tabName == 'Client';
 
-        let holder = document.getElementById('settHolder');
+        let holder = document.getElementById('raysClientSettings');
+        if (!holder) return;
+        holder.innerHTML = '';
 
-        if (isClientTab) {
-            if (!removedNoSettingsFound) {
-                holder.children[0].remove();
-                removedNoSettingsFound = true;
-            }
-
-            let container = document.createElement('div');
-            container.classList.add('setBodH');
-
-            for (let i = 0; i < 2; i++) {
-                let need = i == 0 ? 'refresh' : 'restart';
-                let color = i == 0 ? 'aqua' : 'red';
-
-                let setting = document.createElement('div');
-                setting.classList.add('settName');
-
-                let nameCont = document.createElement('span');
-                nameCont.classList.add('detailedSettingName');
-
-                let name = document.createElement('span');
-                name.classList.add('name');
-                name.textContent = ' Requires ' + need;
-
-                let star = document.createElement('span');
-                star.textContent = '*';
-                star.style.color = color;
-
-                name.insertAdjacentElement('afterbegin', star);
-                nameCont.appendChild(name);
-                setting.appendChild(nameCont);
-                container.appendChild(setting);
-            }
-
-            holder.appendChild(container);
-        }
+        if (isClientTab) this.generateSettingsKey(holder);
 
         for (let module of this.listAll()) {
             let moduleInSearch = module.name.toLowerCase().includes(search);
@@ -183,11 +174,6 @@ export default class Manager {
                 module.options.length;
 
             if (genModule) {
-                if (!removedNoSettingsFound && holder.children.length == 1) {
-                    holder.children[0].remove();
-                    removedNoSettingsFound = true;
-                }
-
                 let container = document.createElement('div');
                 container.classList.add('setBodH');
 
@@ -222,6 +208,33 @@ export default class Manager {
                 }
             }
         }
+    }
+
+    private generateSettingsKey(holder: HTMLElement) {
+        let header = document.createElement('div');
+        header.classList.add('setHed');
+        header.textContent = 'Key';
+
+        let container = document.createElement('div');
+        container.classList.add('setBodH', 'raysSettingsKey');
+
+        for (let i = 0; i < 2; i++) {
+            let setting = document.createElement('div');
+            setting.classList.add('settName');
+
+            let star = document.createElement('span');
+            star.classList.add('raysSettingsKeyStar');
+            star.textContent = '*';
+            star.style.color = i == 0 ? 'aqua' : 'red';
+
+            let text = document.createElement('span');
+            text.textContent = i == 0 ? ' Requires refresh' : ' Requires restart';
+
+            setting.append(star, text);
+            container.appendChild(setting);
+        }
+
+        holder.append(header, container);
     }
 
     static registerBeforeRequestCallback(callback: OnBeforeRequestFunction) {

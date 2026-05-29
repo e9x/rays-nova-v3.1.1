@@ -65,23 +65,46 @@ export default class BetterConsole extends Module {
     }
 
     renderer(): void {
-        window.console = new Proxy(window.console, {
+        const methods = ['log', 'info', 'error'];
+        const originalConsole = window.console;
+        const originalValues: Record<string, unknown> = {};
+        const originalMethods: Record<string, (...args: any[]) => unknown> = {};
+        const proxyMethods: Record<string, (...args: any[]) => unknown> = {};
+
+        for (const method of methods) {
+            const original = Reflect.get(originalConsole, method);
+            originalValues[method] = original;
+            originalMethods[method] =
+                typeof original === 'function'
+                    ? original.bind(originalConsole)
+                    : () => {};
+            proxyMethods[method] = (...args: any[]) => {
+                try {
+                    ipcRenderer.send('log', method, ...args);
+                } catch {}
+
+                return originalMethods[method](...args);
+            };
+        }
+
+        window.console = new Proxy(originalConsole, {
             set: (target, prop, value) => {
-                if (!['log', 'info', 'error'].includes(prop as string))
-                    return true;
                 return Reflect.set(target, prop, value);
             },
             get: (target, prop) => {
-                if (!['log', 'info', 'error'].includes(prop as string))
+                const method = prop as string;
+                if (!methods.includes(method))
                     return Reflect.get(target, prop);
-                return (...args: any[]) => {
-                    try {
-                        ipcRenderer.send('log', prop, ...args);
-                    } catch {}
 
-                    Reflect.get(target, prop)(...args);
-                    return Reflect.get(target, prop);
-                };
+                const current = Reflect.get(target, prop);
+                if (
+                    current !== originalValues[method] &&
+                    current !== proxyMethods[method]
+                ) {
+                    return current;
+                }
+
+                return proxyMethods[method];
             },
         });
     }

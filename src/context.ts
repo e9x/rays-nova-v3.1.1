@@ -13,7 +13,7 @@ export enum RunAt {
 }
 
 export function fromURL(url: URL): Context | null {
-    if(!['krunker.io', 'browserfps.com'].includes(url.hostname)) return null;
+    if(!['totallynotio.krunker.zip', 'krunker.io', 'browserfps.com'].includes(url.hostname)) return null;
 
     switch(url.pathname) {
         case '/':

@@ -71,7 +71,7 @@ export default class MatchmakerFix extends Module {
             if (!details.url) return callback({ cancel: false });
             let url = new URL(details.url);
 
-            if (url.hostname === 'matchmaker.krunker.io') {
+            if (url.hostname === 'matchmaker.krunker.zip') {
                 return callback({
                     redirectURL:
                         'mmfix://' + url.pathname.toString() + url.search || '',

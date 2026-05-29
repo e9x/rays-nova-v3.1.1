@@ -29,16 +29,20 @@ export default abstract class UI {
         menuWindow.className = 'dark';
         menuWindow.innerHTML = '';
 
+        let content = document.createElement('div');
+        content.className = 'raysMenuContent';
+        menuWindow.append(content);
+
         if(this.name) {
             let header = document.createElement('div');
             header.id = 'referralHeader';
             header.textContent = this.name;
-            menuWindow.append(header);
+            content.append(header);
         }
 
         let holder = document.createElement('div');
         holder.id = 'settHolder';
-        menuWindow.append(holder);
+        content.append(holder);
 
         if(!this.categories.length || !this.categories.some(cat => cat.options.length)) {
             let noOptions = document.createElement('div');
@@ -76,7 +80,7 @@ export default abstract class UI {
             for(let option of category.options) container.append(option.generate());
         }
 
-        for(let button of this.buttons) menuWindow.append(button.generateBig());
+        for(let button of this.buttons) content.append(button.generateBig());
         windowHolder.style.display = '';
     }
 }

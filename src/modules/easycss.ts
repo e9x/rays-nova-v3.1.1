@@ -5,15 +5,24 @@ import Button from '../options/button';
 import AddCSSUI from '../ui/addcss';
 import { existsSync, FSWatcher, readFileSync, watch } from 'fs';
 import TextInput from '../options/textinput';
+import ClientOption from '../options';
 
 export default class EasyCSS extends Module {
     name = 'EasyCSS';
     id = 'easycss';
-    options = [];
+    options: ClientOption[] = [
+        new Button(this, {
+            name: 'Custom CSS',
+            id: '',
+            description: 'Manage locally injected CSS files and variables.',
+            label: 'Open',
+            onChange: () => this.openManager(),
+        }),
+    ];
     element = document.createElement('style');
     ruleElement = document.createElement('style');
 
-    watcher: FSWatcher | null;
+    watcher: FSWatcher | null = null;
     lastChange = 0;
 
     contexts = [{
@@ -24,20 +33,36 @@ export default class EasyCSS extends Module {
     addCSSUI = new AddCSSUI(this);
 
     async renderer() {
-        waitFor(() => document.body).then((body: HTMLElement) => body.append(this.element, this.ruleElement));
+        waitFor(() => document.body).then((body) => (body as HTMLElement).append(this.element, this.ruleElement));
         this.applyCSS();
+    }
 
-        await waitFor(() => window.windows?.[0] && window.windows[0].getSettings && window.windows[0]);
+    openManager() {
+        let windowHolder = document.getElementById('windowHolder');
+        let menuWindow = document.getElementById('menuWindow');
 
-        let settings = window.windows[0];
-        let gen = settings.getSettings;
-        settings.getSettings = (...args) => {
-            let isCSSTab = settings.tabs[settings.settingType][settings.tabIndex]?.name == 'CSS';
+        if(!windowHolder || !menuWindow) return;
 
-            let ret = gen.apply(settings, args);
-            if(isCSSTab) setTimeout(this.injectTab.bind(this));
-            return ret;
-        }
+        windowHolder.className = 'popupWin';
+        menuWindow.style.width = '1200px';
+        menuWindow.className = 'dark';
+        menuWindow.innerHTML = '';
+
+        let content = document.createElement('div');
+        content.className = 'raysMenuContent';
+
+        let header = document.createElement('div');
+        header.id = 'referralHeader';
+        header.textContent = 'Custom CSS';
+
+        let holder = document.createElement('div');
+        holder.id = 'settHolder';
+
+        content.append(header, holder);
+        menuWindow.append(content);
+        windowHolder.style.display = '';
+
+        this.injectTab();
     }
 
     injectTab() {
@@ -109,7 +134,7 @@ export default class EasyCSS extends Module {
 
         let addNew = new Button(this, {
             label: 'Add new',
-            onChange: this.addCSSUI.open.bind(this.addCSSUI, null),
+            onChange: () => this.addCSSUI.open(),
 
             name: '',
             id: '',
@@ -147,7 +172,7 @@ export default class EasyCSS extends Module {
             this.applyVariables();
             this.lastChange = Date.now();
 
-            this.watcher = watch(css.path, (event) => {
+            this.watcher = watch(css.path, (event: string) => {
                 if (event === 'change' && Date.now() - this.lastChange > 500) {
                     this.applyCSS();
                     this.injectTab();
@@ -177,9 +202,11 @@ export default class EasyCSS extends Module {
         this.ruleElement.textContent = str;
     }
 
-    parseVariables(sheet: CSSStyleSheet, variableHolder: HTMLElement) {
+    parseVariables(sheet: CSSStyleSheet | null, variableHolder: HTMLElement) {
+        if(!sheet) return;
+
         // getter can throw an Exception at times
-        try { sheet?.cssRules; } catch { return; }
+        try { sheet.cssRules; } catch { return; }
 
         if(sheet?.cssRules?.length) for(let rule of sheet.cssRules) {
             if(rule instanceof CSSImportRule) {

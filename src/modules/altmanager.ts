@@ -136,6 +136,7 @@ export default class AltManager extends Module {
 
     renderer() {
         this.button.className = 'button buttonPI lgn';
+        this.button.dataset.raysAltManager = 'true';
         this.button.textContent = 'Alt Manager';
 
         let firstStyle = {
@@ -150,8 +151,11 @@ export default class AltManager extends Module {
             this.button.style[style] = firstStyle[style];
 
         let mount = (bar: HTMLDivElement) => {
-            (bar.lastElementChild as HTMLElement).style.display = 'none'; // Signup rewards
-            bar.append(this.button);
+            if (!bar.contains(this.button)) bar.append(this.button);
+            this.button.style.display = '';
+
+            let loginButton = Array.from(bar.children).find((child) => child !== this.button && child.classList.contains('lgn')) as HTMLElement;
+            if (loginButton) loginButton.style.display = '';
         };
 
         waitFor(() => document.getElementById('signedOutHeaderBar')).then((bar: HTMLDivElement) => {
@@ -161,7 +165,7 @@ export default class AltManager extends Module {
             new MutationObserver(() => {
                 bar = document.getElementById('signedOutHeaderBar') as HTMLDivElement;
                 if (bar) mount(bar);
-            }).observe(document.getElementById('playerHeaderEl'), { childList: true });
+            }).observe(document.getElementById('playerHeaderEl') ?? document.body, { childList: true, subtree: true });
         });
 
         this.button.onclick = () => this.ui.open();
@@ -229,21 +233,27 @@ export default class AltManager extends Module {
                 setTimeout(resolve);
             });
 
-            let usernameInput = document.getElementById('accName');
-            let passwordInput = document.getElementById('accPass');
-            let loginBtn = passwordInput?.nextElementSibling as HTMLButtonElement;
-            
-            if (!usernameInput || !passwordInput || !loginBtn) return;
+            let fields = await waitFor(() => {
+                let usernameInput = document.getElementById('accName') as HTMLInputElement;
+                let passwordInput = document.getElementById('accPass') as HTMLInputElement;
+                let loginBtn = document.querySelector('.accBtn[onclick*="loginAcc"], .accountButton[onclick*="loginAcc"], [onclick="loginAcc()"]') as HTMLElement;
 
-            (usernameInput as HTMLInputElement).value = alt.username;
-            (passwordInput as HTMLInputElement).value = encrypt(alt.password);
+                if (!usernameInput || !passwordInput) return;
+                return { usernameInput, passwordInput, loginBtn };
+            }, 3000) as { usernameInput: HTMLInputElement; passwordInput: HTMLInputElement; loginBtn?: HTMLElement };
+
+            if (!fields) return;
+
+            fields.usernameInput.value = alt.username;
+            fields.passwordInput.value = encrypt(alt.password);
 
             // Svelte :P
-            usernameInput.dispatchEvent(new Event('input'));
-            passwordInput.dispatchEvent(new Event('input'));
+            fields.usernameInput.dispatchEvent(new Event('input', { bubbles: true }));
+            fields.passwordInput.dispatchEvent(new Event('input', { bubbles: true }));
 
             await new Promise((resolve) => setTimeout(resolve));
-            loginBtn.click();
+            if (fields.loginBtn) fields.loginBtn.click();
+            else (window as any).loginAcc?.();
         });
     }
 

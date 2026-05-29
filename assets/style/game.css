@@ -4,11 +4,11 @@
 }
 
 .detailedSettingName .name {
-    color: rgba(255, 255, 255, 0.6) !important;
+    color: inherit !important;
 }
 
 .detailedSettingName .description {
-    color: #777;
+    color: rgba(0, 0, 0, 0.35);
     font-size: 16px;
 }
 
@@ -21,6 +21,23 @@
 .detailedSettingName .name .question:hover {
     text-decoration: underline;
     cursor: pointer;
+}
+
+#settingsTabLayout {
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    overflow-x: auto !important;
+    justify-content: space-around;
+}
+
+.settingTab {
+    width: 100%;
+}
+
+.raysSettingsKeyStar {
+    display: inline-block;
+    width: 14px;
+    font-weight: 700;
 }
 
 .raysBadge,
@@ -79,4 +96,90 @@
 
 #chatList {
     margin-bottom: 10px;
+}
+
+.raysMenuContent,
+.raysMenuContent div {
+    color: #fff;
+}
+
+.raysMenuContent #settHolder > .setHed:first-child {
+    margin-top: 10px !important;
+}
+
+.raysMenuContent .setBodH {
+    margin-left: 5px;
+    width: calc(100% - 55px);
+    margin-top: 15px;
+    margin-bottom: 15px;
+    padding: 5px 20px;
+    padding-bottom: 5px;
+    border-radius: 6px;
+    background-color: rgba(0, 0, 0, 0.4);
+}
+
+.raysMenuContent .setBodH .settName:last-child,
+.raysMenuContent .setBodH .settNameSmall:last-child {
+    padding-bottom: 10px;
+    border-bottom: none !important;
+}
+
+.raysMenuContent .setHed {
+    border: 4px solid rgba(255, 255, 255, 0.3);
+    padding: 10px 10px 5px;
+    background-color: rgb(80, 80, 80);
+    margin-top: 40px;
+    margin-bottom: 20px;
+    font-size: 22px;
+    cursor: pointer;
+    color: #fff;
+}
+
+.raysMenuContent .setHed:hover {
+    background-color: rgb(70, 70, 70);
+}
+
+.raysMenuContent .settName,
+.raysMenuContent .settNameSmall {
+    clear: both;
+    margin-top: 10px;
+    font-size: 22px;
+    color: rgba(255, 255, 255, 0.6) !important;
+    padding-bottom: 10px;
+    border-bottom: 3px solid rgba(255, 255, 255, 0.2);
+}
+
+.raysMenuContent .settingsBtn {
+    color: rgba(255, 255, 255, 0.7);
+    text-align: center;
+    display: inline-block;
+    width: 75px;
+    cursor: pointer;
+    background-color: #2196f3;
+    font-size: 17px;
+    padding: 4px 8px;
+    margin-left: 8px;
+    float: right;
+    border-radius: 4px;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+.raysMenuContent .settingsBtn:hover {
+    color: #fff;
+}
+
+.raysMenuContent .detailedSettingName {
+    display: inline-flex;
+    flex-direction: column;
+}
+
+.raysMenuContent .detailedSettingName .name {
+    color: rgba(255, 255, 255, 0.6) !important;
+}
+
+.raysMenuContent .detailedSettingName .description {
+    color: #777;
+    font-size: 16px;
 }

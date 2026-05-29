@@ -140,7 +140,7 @@ export default class Discord extends Module {
                   showUser
                       ? {
                             smallImageKey:
-                                'https://assets.krunker.io/textures/classes/icon_' +
+                                'https://assets.totallynotio.krunker.zip/textures/classes/icon_' +
                                 activity.class.index +
                                 '.png',
                             smallImageText: activity.user,
@@ -220,7 +220,7 @@ export default class Discord extends Module {
 
         this.client.on('ACTIVITY_JOIN', ({ secret }) => {
             console.log('Joining game ' + secret);
-            mainWindow.loadURL('https://krunker.io/?game=' + secret);
+            mainWindow.loadURL('https://totallynotio.krunker.zip/?game=' + secret);
         });
 
         ipcMain.on('updateRPC', this.update.bind(this));
@@ -240,7 +240,7 @@ export default class Discord extends Module {
 
             if (gameActivity.id) {
                 let matchInfo = await fetch(
-                    'https://matchmaker.krunker.io/game-info?game=' +
+                    'https://matchmaker.krunker.zip/game-info?game=' +
                         gameActivity.id
                 )
                     .then((res) => res.json())
