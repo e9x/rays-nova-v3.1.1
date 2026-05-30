@@ -1,4 +1,5 @@
 on:
+  workflow_dispatch:
   push:
     tags:
       - '*'
@@ -12,7 +13,13 @@ jobs:
 
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-latest]
+        include:
+          - os: ubuntu-latest
+            build_args: --linux
+          - os: windows-latest
+            build_args: --win
+          - os: macos-latest
+            build_args: --mac --x64 --arm64
 
     steps:
       - name: Checkout
@@ -31,6 +38,6 @@ jobs:
       - name: Transpile
         run: npm run transpile
       - name: Build
-        run: npx electron-builder --publish always
+        run: npx electron-builder ${{ matrix.build_args }} --publish always
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

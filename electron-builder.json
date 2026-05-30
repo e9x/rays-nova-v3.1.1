@@ -43,6 +43,18 @@
             }
         ]
     },
+    "mac": {
+        "artifactName": "${name}-${os}-${version}-${arch}.${ext}",
+        "target": [
+            {
+                "target": "dmg",
+                "arch": [
+                    "x64",
+                    "arm64"
+                ]
+            }
+        ]
+    },
     "nsis": {
         "artifactName": "${name}-${os}-setup-${version}-${arch}.${ext}",
         "oneClick": false,
